@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes App</title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    input, textarea {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 200px;
+    }
+    textarea {
+      width: 300px;
+      height: 80px;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .note {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .note h3 {
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    .note p {
+      color: #555;
+    }
+    .delete-btn {
+      background: crimson;
+      border: none;
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .delete-btn:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+  <h1>📝 Notes App</h1>
+
+  <form action="/" method="POST">
+    <input type="text" name="title" placeholder="Title" required />
+    <textarea name="content" placeholder="Write your note..." required></textarea>
+    <button type="submit">Add Note</button>
+  </form>
+
+ <div class="notes">
+  <% if (notes.length === 0) { %>
+    <p>No notes yet. Add one above!</p>
+  <% } else { %>
+    <% notes.forEach(note => { %>
+      <div class="note" id="note-<%= note._id %>">
+        <!-- Display mode -->
+        <div class="note-view">
+          <h3><%= note.title %></h3>
+          <p><%= note.content %></p>
+          <div class="btn-group">
+            <button class="edit-btn" onclick="toggleEdit('<%= note._id %>')">Edit</button>
+            <form action="/delete/<%= note._id %>" method="POST" style="display:inline;">
+              <button class="delete-btn" type="submit">Delete</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Edit mode (hidden by default) -->
+        <form action="/update/<%= note._id %>" method="POST" class="note-edit" style="display:none;">
+          <input type="text" name="title" value="<%= note.title %>" required />
+          <textarea name="content" required><%= note.content %></textarea>
+          <div class="btn-group">
+            <button type="submit">Save</button>
+            <button type="button" onclick="toggleEdit('<%= note._id %>', false)">Cancel</button>
+          </div>
+        </form>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<script>
+  // Toggle between view and edit mode
+  function toggleEdit(id, show = true) {
+    const view = document.querySelector(`#note-${id} .note-view`);
+    const edit = document.querySelector(`#note-${id} .note-edit`);
+    view.style.display = show ? "none" : "block";
+    edit.style.display = show ? "block" : "none";
+  }
+</script>
+
+</body>
+</html>
